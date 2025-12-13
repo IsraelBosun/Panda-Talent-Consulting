@@ -81,7 +81,7 @@ export default function SpecializedTalents() {
                     Learn more
                   </button>
 
-                  <div className="w-full sm:w-[140px] sm:ml-auto">
+                  <div className="w-[220px] sm:w-[190px] sm:ml-auto">
                     <Image
                       src={talent.image}
                       alt={talent.title}

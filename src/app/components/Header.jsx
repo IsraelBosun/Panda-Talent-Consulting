@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import { useState } from 'react';
 
 export default function Header() {
@@ -6,6 +7,21 @@ export default function Header() {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 80; // Height of sticky header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: sectionId === 'home' ? 0 : offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -24,21 +40,33 @@ export default function Header() {
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
+            <button 
+              onClick={() => scrollToSection('home')}
+              className="text-gray-700 hover:text-gray-900 text-sm font-medium"
+            >
               Home
-            </a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
+            </button>
+            <button 
+              onClick={() => scrollToSection('our-solution')}
+              className="text-gray-700 hover:text-gray-900 text-sm font-medium"
+            >
               Our Solution
-            </a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
+            </button>
+            <button 
+              onClick={() => scrollToSection('use-cases')}
+              className="text-gray-700 hover:text-gray-900 text-sm font-medium"
+            >
               Use Cases
-            </a>
+            </button>
             <a href="#" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
               Teams
             </a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
+            <button 
+              onClick={() => scrollToSection('about')}
+              className="text-gray-700 hover:text-gray-900 text-sm font-medium"
+            >
               About
-            </a>
+            </button>
           </nav>
 
           {/* Sign In Button - Desktop */}
@@ -72,27 +100,24 @@ export default function Header() {
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <nav className="flex flex-col space-y-4">
-              <a 
-                href="#" 
-                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button 
+                onClick={() => scrollToSection('home')}
+                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md text-left"
               >
                 Home
-              </a>
-              <a 
-                href="#" 
-                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button 
+                onClick={() => scrollToSection('our-solution')}
+                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md text-left"
               >
                 Our Solution
-              </a>
-              <a 
-                href="#" 
-                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button 
+                onClick={() => scrollToSection('use-cases')}
+                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md text-left"
               >
                 Use Cases
-              </a>
+              </button>
               <a 
                 href="#" 
                 className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md"
@@ -100,13 +125,12 @@ export default function Header() {
               >
                 Teams
               </a>
-              <a 
-                href="#" 
-                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button 
+                onClick={() => scrollToSection('about')}
+                className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md text-left"
               >
                 About
-              </a>
+              </button>
               <button 
                 className="text-gray-700 hover:text-gray-900 text-sm font-medium px-2 py-2 hover:bg-gray-50 rounded-md text-left"
                 onClick={() => setIsMobileMenuOpen(false)}

@@ -96,11 +96,12 @@ export default function FeatureSections() {
             {/* Step 1 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
+              <Image
+              src="/images/source.png"
+              alt="Source and vet"
+              width={45}
+              height={35}
+            />
               </div>
               <div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Source & Vet</h4>
@@ -113,11 +114,12 @@ export default function FeatureSections() {
             {/* Step 2 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
+                <Image
+                src="/images/match.png"
+                alt="match and shortlist"
+                width={45}
+                height={50}
+              />
               </div>
               <div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Match & Shortlist</h4>
@@ -130,11 +132,12 @@ export default function FeatureSections() {
             {/* Step 3 */}
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
-                  </svg>
-                </div>
+                <Image
+                src="/images/hire.png"
+                alt="hire and onboard"
+                width={40}
+                height={35}
+              />
               </div>
               <div>
                 <h4 className="text-lg font-bold text-gray-900 mb-2">Hire & Onboard</h4>
