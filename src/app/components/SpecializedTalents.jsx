@@ -13,7 +13,7 @@ export default function SpecializedTalents() {
       title: "Finance & Accounting",
       description:
         "From accountants to finance officers, we source top candidates with in-demand skills and experience—and manage the entire hiring process for you.",
-      image: "/images/finance.png",
+      image: "/images/tech.png",
     },
     {
       title: "Tech",
@@ -31,7 +31,7 @@ export default function SpecializedTalents() {
       title: "Admin and Customer Support",
       description:
         "From virtual assistants to customer support representatives, we source top candidates with in-demand skills and experience—and manage the entire hiring process for you.",
-      image: "/images/admin.png",
+      image: "/images/creatives.png",
     },
   ]
 
@@ -59,42 +59,42 @@ export default function SpecializedTalents() {
           ref={sliderRef}
           className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth"
         >
-          {talents.map((talent, index) => (
-            <div
-              key={index}
-              className="flex-shrink-0 w-[360px] lg:w-[420px]"
-            >
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 h-full hover:shadow-lg transition-shadow">
+{talents.map((talent, index) => (
+  <div
+    key={index}
+    className="flex-shrink-0 w-[360px] lg:w-[420px]"
+  >
+    <div className="bg-white rounded-2xl border border-gray-200 p-6 h-full hover:shadow-lg transition-shadow flex flex-col">
 
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {talent.title}
-                </h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-3">
+        {talent.title}
+      </h3>
 
-                <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-                  {talent.description}
-                </p>
+      <p className="text-gray-600 text-sm mb-6 leading-relaxed flex-grow">
+        {talent.description}
+      </p>
 
-                {/* Button + Image */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      {/* Button + Image */}
+      <div className="flex flex-col-reverse sm:flex-row items-start sm:items-end gap-4 mt-auto">
 
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap">
-                    Learn more
-                  </button>
+        <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap sm:min-h-[42px] flex items-center justify-center">
+          Learn more
+        </button>
 
-                  <div className="w-[220px] sm:w-[190px] sm:ml-auto">
-                    <Image
-                      src={talent.image}
-                      alt={talent.title}
-                      width={400}
-                      height={250}
-                      className="rounded-lg object-cover"
-                    />
-                  </div>
-                </div>
+        <div className="w-[220px] sm:w-[190px] sm:ml-auto">
+          <Image
+            src={talent.image}
+            alt={talent.title}
+            width={400}
+            height={250}
+            className="rounded-lg object-cover"
+          />
+        </div>
+      </div>
 
-              </div>
-            </div>
-          ))}
+    </div>
+  </div>
+))}
         </div>
 
         {/* Navigation */}

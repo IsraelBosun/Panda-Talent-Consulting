@@ -10,14 +10,13 @@ export default function Hero() {
           alt="Team collaboration"
           className="w-full h-full object-cover"
         /> */}
-                        <Image
-                        src="/images/hero.jpg"
-                        alt="match and shortlist"
-                        width={1920}
-                        height={1080}
-                        className="w-full h-full object-cover"
-
-                      />
+          <Image
+          src="/images/hero.jpg"
+          alt="match and shortlist"
+          width={1920}
+          height={1080}
+          className="w-full h-full object-cover"
+        />
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/50"></div>
       </div>
