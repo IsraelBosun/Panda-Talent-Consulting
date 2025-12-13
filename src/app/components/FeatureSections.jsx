@@ -1,3 +1,6 @@
+import Image from 'next/image';
+
+
 export default function FeatureSections() {
   return (
     <section className="bg-white py-16">
@@ -22,9 +25,11 @@ export default function FeatureSections() {
             </p>
           </div>
           <div className="order-1 lg:order-2">
-            <img
-              src="https://dummyimage.com/500x350/e5e7eb/374151&text=Handshake"
+            <Image
+              src="/images/handshake.png"
               alt="Business handshake"
+              width={500}
+              height={350}
               className="w-full h-auto rounded-2xl"
             />
           </div>
@@ -33,9 +38,11 @@ export default function FeatureSections() {
         {/* Feature 2 - Quality Assured */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mb-24">
           <div className="order-1">
-            <img
-              src="https://dummyimage.com/500x350/1f2937/ffffff&text=Developer+Working"
-              alt="Developer working"
+            <Image
+              src="/images/talent.png"
+              alt="tested & trusted talent"
+              width={500}
+              height={350}
               className="w-full h-auto rounded-2xl"
             />
           </div>
@@ -60,9 +67,11 @@ export default function FeatureSections() {
             </p>
           </div>
           <div className="order-1 lg:order-2">
-            <img
-              src="https://dummyimage.com/500x350/e5e7eb/374141&text=AI+Matching"
-              alt="AI matching process"
+            <Image
+              src="/images/handshake.png"
+              alt="AI and human matching"
+              width={500}
+              height={350}
               className="w-full h-auto rounded-2xl"
             />
           </div>
@@ -71,22 +80,16 @@ export default function FeatureSections() {
         {/* Process Steps Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center mt-24">
           {/* Left Side - Images */}
-          <div className="flex gap-4">
             <div className="flex-1">
-              <img
-                src="https://dummyimage.com/300x400/f3f4f6/374151&text=Team+Meeting"
-                alt="Team meeting"
-                className="w-full h-auto rounded-2xl object-cover"
-              />
+            <Image
+              src="/images/shortlist.png"
+              alt="AI and human matching"
+              width={500}
+              height={350}
+              className="w-full h-auto rounded-2xl"
+            />
             </div>
-            <div className="flex-1">
-              <img
-                src="https://dummyimage.com/300x400/1f2937/ffffff&text=Collaboration"
-                alt="Collaboration"
-                className="w-full h-auto rounded-2xl object-cover"
-              />
-            </div>
-          </div>
+
 
           {/* Right Side - Process Steps */}
           <div className="space-y-8">

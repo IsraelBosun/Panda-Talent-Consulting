@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Hero() {
   return (
     <section className="relative min-h-[600px] lg:min-h-[700px] overflow-hidden">
@@ -8,6 +10,13 @@ export default function Hero() {
           alt="Team collaboration"
           className="w-full h-full object-cover"
         />
+        {/* <Image
+          src="/images/hero.png"
+          alt="Business handshake"
+          width={1920}
+          height={1080}
+          className="w-full h-full object-cover"
+        /> */}
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/40"></div>
       </div>
