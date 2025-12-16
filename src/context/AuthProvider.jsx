@@ -1,18 +1,21 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // FIX: Imported for redirection
 import { 
   auth, 
   db,
-  // You will add the GoogleAuthProvider here later
+  app, // FIX: Imported 'app' for Callable Functions
 } from '../../config/firebase-client';
 import { 
   onAuthStateChanged, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
   signOut,
-  // You will add signInWithPopup and GoogleAuthProvider here later
 } from 'firebase/auth';
+// FIX: Imported Firebase Functions methods
+import { getFunctions, httpsCallable } from 'firebase/functions'; 
+
 import { doc, getDoc } from 'firebase/firestore';
 import { Toaster, toast } from 'react-hot-toast';
 
@@ -22,9 +25,32 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
+// Initialize Callable Functions Client
+const functions = getFunctions(app);
+const finalizeSignupCallable = httpsCallable(functions, 'finalizeSignup');
+
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // FIX: Initialized useRouter
+
+  // FIX: Helper function to handle role-based redirection
+  const redirectToDashboard = (role) => {
+    switch (role) {
+      case 'candidate':
+        router.push('/candidate/dashboard');
+        break;
+      case 'employer':
+        router.push('/employer/dashboard');
+        break;
+      case 'admin':
+        router.push('/admin/dashboard');
+        break;
+      default:
+        // For 'pending' or unknown roles, send to a profile setup page
+        router.push('/onboarding'); 
+    }
+  };
 
   // -------------------------
   // 1. Core Auth Functions
@@ -32,24 +58,47 @@ export function AuthProvider({ children }) {
 
   async function signup(email, password, role) {
     try {
+      // 1. Create user with email/password
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
       
-      // IMPORTANT: Add custom claim for role immediately upon signup
-      // This requires a Cloud Function (next step) to set the custom claim,
-      // but for now, we'll return the user.
+      // 2. Call the backend function to set the custom role and create profile
+      await finalizeSignupCallable({ role });
+
+      // 3. Force token refresh to get the new custom claim immediately
+      const tokenResult = await user.getIdTokenResult(true); 
+      const finalRole = tokenResult.claims.role || role;
       
-      // We will also need to call a backend API here to create the 
-      // Firestore document and set the custom claim.
+      toast.success('Account created successfully! Redirecting...');
+      redirectToDashboard(finalRole);
       
       return userCredential;
+
     } catch (error) {
-      toast.error(error.message);
+      console.error(error);
+      const errorMessage = error.message.includes('auth/') ? error.message : "Signup failed. Please try again.";
+      toast.error(errorMessage);
       throw error;
     }
   }
 
-  function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+  async function login(email, password) { // FIX: Added redirection after login
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Fetch current claims to get the role
+        const tokenResult = await user.getIdTokenResult();
+        const role = tokenResult.claims.role || 'pending';
+        
+        toast.success('Logged in successfully! Redirecting...');
+        redirectToDashboard(role);
+        
+        return userCredential;
+    } catch (error) {
+        toast.error(error.message);
+        throw error;
+    }
   }
 
   function logout() {
@@ -61,6 +110,7 @@ export function AuthProvider({ children }) {
   // -------------------------
   
   useEffect(() => {
+    // ... (rest of the useEffect remains the same as it correctly handles token change)
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // Fetch custom claims to get the user's role (candidate, employer, admin)

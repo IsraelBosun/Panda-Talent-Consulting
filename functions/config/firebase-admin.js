@@ -1,10 +1,9 @@
 // This file is exclusively for Cloud Functions (backend)
 
 const admin = require('firebase-admin');
+const functions = require('firebase-functions'); // Add functions here just in case, though often not needed in config
 
 // Check if a Firebase app instance already exists to prevent re-initialization 
-// in development/testing environments. In a Cloud Function environment, 
-// this is typically not strictly necessary but is good practice.
 if (!admin.apps.length) {
     admin.initializeApp();
 }
@@ -12,5 +11,5 @@ if (!admin.apps.length) {
 const authAdmin = admin.auth();
 const dbAdmin = admin.firestore();
 
-// Export the Admin SDK objects
-module.exports = { authAdmin, dbAdmin, admin };
+// Export all objects used in index.js
+module.exports = { authAdmin, dbAdmin, admin, functions };

@@ -36,10 +36,9 @@
 
 
 
-
-
 const functions = require('firebase-functions');
-const { authAdmin, dbAdmin } = require('./config/firebase-admin'); // Adjust path if needed
+// CRITICAL: Ensure 'admin' is imported from your config file
+const { authAdmin, dbAdmin, admin } = require('././config/firebase-admin'); 
 
 // --- Firestore Collection Names (Centralized for consistency) ---
 const COLLECTIONS = {
@@ -49,84 +48,99 @@ const COLLECTIONS = {
     ADMINS: 'admins'
 };
 
+const FIRST_ADMIN_EMAIL = 'bluehydra001@gmail.com'; 
 
 /**
- * Cloud Function triggered when a new user signs up via Firebase Auth.
- * * 1. Reads the temporary 'role' set during frontend signup.
- * 2. Sets the 'role' as a custom claim on the user's Auth token for RBAC.
- * 3. Creates the user's public 'users/{uid}' document in Firestore.
- * 4. Creates a corresponding 'candidate' or 'employer' profile document.
+ * 1. Cloud Function triggered on new Auth user creation.
+ * Only handles the special case for the SUPER ADMIN email.
  */
 exports.processSignUp = functions.auth.user().onCreate(async (user) => {
+    // FIX: Add this safety check. If the function is being analyzed by the tooling 
+    // outside of a real execution context, 'user' might be undefined. 
+    // However, if the error is still persisting, this means the deployment 
+    // tooling is treating this function incorrectly. Let's remove this check 
+    // and assume the problem is the dependency chain.
+    
+    // We will stick to the previous version but ensure all paths lead to a defined variable.
+    
+    // Original working logic:
     const { uid, email } = user;
     
-    // --- 1. Determine Initial Role ---
-    
-    // Default to 'candidate' if no role is explicitly passed (e.g., if using Google SSO later)
-    let initialRole = 'candidate';
-    
-    // Check if the user's email is designated as the first admin (Manual check needed)
-    // NOTE: Replace 'your.admin@email.com' with the email you will use for administration.
-    const FIRST_ADMIN_EMAIL = 'your.superadmin@example.com'; 
+    // Check if the user is the designated super admin
     if (email === FIRST_ADMIN_EMAIL) {
-        initialRole = 'admin';
-    } else {
-        // You'll need a way to pass the chosen role from the frontend signup form 
-        // to this backend function. Since Firebase Auth onCreate trigger doesn't 
-        // pass custom signup data directly, the *best practice* is usually 
-        // to have the frontend immediately call a separate Callable Function 
-        // *after* signup to finalize the profile and set the role.
-        
-        // For simplicity *now*, we default to 'candidate', assuming most signups are candidates.
-        // We will implement the proper Callable Function (finalizeProfile) in the next step.
+        try {
+            // Set Admin Claim immediately
+            await authAdmin.setCustomUserClaims(uid, { role: 'admin' });
+            // ... (Rest of Admin setup)
+            await dbAdmin.collection(COLLECTIONS.ADMINS).doc(uid).set({
+                userId: uid,
+                email: email,
+                role: 'admin',
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            await dbAdmin.collection(COLLECTIONS.USERS).doc(uid).set({
+                uid: uid,
+                email: email,
+                role: 'admin',
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            }, { merge: true });
+
+        } catch (error) {
+            console.error("Error setting ADMIN claims/profile:", error);
+        }
     }
+    // Non-admin users will be handled by the 'finalizeSignup' callable function.
+});
 
-
-    // --- 2. Set Custom Claim (Role-Based Access Control) ---
-    try {
-        await authAdmin.setCustomUserClaims(uid, { role: initialRole });
-        console.log(`Custom claim set for user ${uid}: role=${initialRole}`);
-    } catch (error) {
-        console.error("Error setting custom claims:", error);
-        // Do not block execution, continue to Firestore setup
+/**
+ * 2. Callable Function invoked by the client *after* signup to securely finalize the profile.
+ */
+exports.finalizeSignup = functions.https.onCall(async (data, context) => {
+    // 1. Authentication Check
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
     }
-
-
-    // --- 3. Create 'users' Document ---
-    const userRef = dbAdmin.collection(COLLECTIONS.USERS).doc(uid);
-    const userData = {
-        uid: uid,
-        email: email,
-        role: initialRole, // Store role in Firestore as well for easy querying
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        // Add public profile details here (e.g., display name, profile picture URL)
-    };
     
-    // --- 4. Create Role-Specific Profile Document ---
-    if (initialRole === 'candidate') {
-        // Create basic candidate profile
-        dbAdmin.collection(COLLECTIONS.CANDIDATES).doc(uid).set({ 
+    const uid = context.auth.uid;
+    const { role } = data; 
+
+    if (role !== 'candidate' && role !== 'employer') {
+        throw new functions.https.HttpsError('invalid-argument', 'Invalid role specified.');
+    }
+
+    // --- Set Custom Claim (RBAC) ---
+    try {
+        await authAdmin.setCustomUserClaims(uid, { role });
+    } catch (error) {
+        throw new functions.https.HttpsError('internal', 'Failed to set custom user claims.');
+    }
+
+    // --- Create Profile Documents ---
+    const userRef = dbAdmin.collection(COLLECTIONS.USERS).doc(uid);
+    
+    // Update the main users document with the determined role
+    await userRef.set({
+        role: role,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    // Create role-specific profile document
+    if (role === 'candidate') {
+        await dbAdmin.collection(COLLECTIONS.CANDIDATES).doc(uid).set({ 
             userId: uid, 
             status: 'pending_onboarding',
             onboarding_complete: false,
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-    } else if (initialRole === 'employer') {
-        // Create basic employer profile
-        dbAdmin.collection(COLLECTIONS.EMPLOYERS).doc(uid).set({
+    } else if (role === 'employer') {
+        await dbAdmin.collection(COLLECTIONS.EMPLOYERS).doc(uid).set({
             userId: uid,
             companyName: '',
             updatedAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-    } else if (initialRole === 'admin') {
-         dbAdmin.collection(COLLECTIONS.ADMINS).doc(uid).set({
-            userId: uid,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
     }
 
-    // Write to the main users collection
-    await userRef.set(userData, { merge: true });
-
-    console.log(`User ${uid} profile and claims initialized with role: ${initialRole}`);
+    return { success: true, role };
 });
