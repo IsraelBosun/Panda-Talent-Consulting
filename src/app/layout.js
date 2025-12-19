@@ -29,6 +29,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body
         className={`${poppins.variable} antialiased`}
+        suppressHydrationWarning={true} // <--- Add this line
       >
         <AuthProvider>
         {children}

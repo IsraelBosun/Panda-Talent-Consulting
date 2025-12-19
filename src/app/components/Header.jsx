@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -69,12 +70,18 @@ export default function Header() {
             </button>
           </nav>
 
-          {/* Sign In Button - Desktop */}
-          <div className="hidden md:flex items-center">
-            <button className="text-gray-700 hover:text-gray-900 text-sm font-medium">
-              Sign In
-            </button>
-          </div>
+          {/* Change the Login link */}
+          <Link href="/login" className="text-sm font-semibold leading-6 text-gray-900">
+            Log in <span aria-hidden="true">&rarr;</span>
+          </Link>
+
+          {/* Change the Sign up button */}
+          <Link
+            href="/signup"
+            className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          >
+            Sign up
+          </Link>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
