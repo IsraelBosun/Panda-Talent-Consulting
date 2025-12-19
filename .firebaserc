@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "panda-talent-marketplace"
-  }
+    "default": "panda-talent-marketplace",
+    "pandas": "panda-talent-marketplace"
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -36,7 +36,7 @@
 
 
 
-const functions = require('firebase-functions');
+const functions = require("firebase-functions/v1");
 // CRITICAL: Ensure 'admin' is imported from your config file
 const { authAdmin, dbAdmin, admin } = require('././config/firebase-admin'); 
 
@@ -62,6 +62,11 @@ exports.processSignUp = functions.auth.user().onCreate(async (user) => {
     // and assume the problem is the dependency chain.
     
     // We will stick to the previous version but ensure all paths lead to a defined variable.
+
+    if (!user) {
+        console.error("Error: User object is undefined in onCreate trigger during analysis/execution.");
+        return null; 
+    }
     
     // Original working logic:
     const { uid, email } = user;
